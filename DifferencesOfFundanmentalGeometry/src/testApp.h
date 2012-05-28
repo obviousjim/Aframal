@@ -1,8 +1,8 @@
 #pragma once
 
 #include "ofMain.h"
-#include "gts.h"
 #include "ofxGts.h"
+#include "ofxGameCamera.h"
 
 class testApp : public ofBaseApp{
 
@@ -21,13 +21,10 @@ class testApp : public ofBaseApp{
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
 
-    vector<ofVec3f> vertices;
-    vector<GtsVertex*> test_verts;
-    vector<GtsEdge*> edges;
-    vector<GtsTriangle*> triangles;
-    
-	GtsSurface* surfaceFromFile;
-	ofxGtsSurface* sphere;
+	ofxGts gts;
+	ofxGtsSurface* surface1;
+	ofxGtsSurface* surface2;
+    ofxGtsSurface* result;
     
     ofMesh m;
 };

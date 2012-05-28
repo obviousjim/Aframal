@@ -13,7 +13,7 @@ static void write_vertex(GtsVertex* v, guint* nv) {
 //--------------------------------------------------------------
 void testApp::setup(){
 	ofBackground(33,33,33);
-	ofSetFrameRate(60);
+	ofSetFrameRate(30);
 	ofSetVerticalSync(true);
 	
 	string file = ofToDataPath("surfaces/horse4.gts",true);
@@ -40,7 +40,6 @@ void testApp::setup(){
 	ofxGts gts;
 	sphere = gts.createSurface();
 	sphere->setup(surfaceFromFile);
-    
 	//sphere->setupSphere(2);
 	test_verts = sphere->getVertices();
 	vector<GtsVertex*>::iterator it = test_verts.begin();
@@ -51,6 +50,18 @@ void testApp::setup(){
 //--------------------------------------------------------------
 void testApp::update(){
 	ofSetWindowTitle(ofToString(ofGetFrameRate()));
+    
+    for(int i = 0; i < test_verts.size(); i++){
+        GtsVertexNormal* normal = GTS_VERTEX_NORMAL(test_verts[i]);
+    	test_verts[i]->p.x += ofRandomf()*.001;
+    	test_verts[i]->p.y += ofRandomf()*.001; //ofSignedNoise(test_verts[i]->p.y/1000,ofGetFrameNum()/100.)*.001;
+    	test_verts[i]->p.z += ofRandomf()*.001;
+
+//    	test_verts[i]->p.x += normal->n[0]*.000001;
+//    	test_verts[i]->p.y += normal->n[1]*.000001; //ofSignedNoise(test_verts[i]->p.y/1000,ofGetFrameNum()/100.)*.001;
+//    	test_verts[i]->p.z += normal->n[2]*.000001; //ofSignedNoise(test_verts[i]->p.z/1000,ofGetFrameNum()/100.)*.001;
+        
+    }
 }
 
 //--------------------------------------------------------------
@@ -60,10 +71,15 @@ void testApp::draw(){
 
 	m.clearIndices();
     m.clearVertices();
+    m.clearNormals();
     
     vector<GtsVertex*>::iterator it = test_verts.begin();
     for(int i = 0; i < test_verts.size(); i++){
+        GtsVertexNormal* normal = GTS_VERTEX_NORMAL(test_verts[i]); 
+
         m.getVertices().push_back(ofVec3f(test_verts[i]->p.x,test_verts[i]->p.y,test_verts[i]->p.z)); 
+    	m.getNormals().push_back(ofVec3f(normal->n[0],normal->n[1],normal->n[2]));
+        
     }
     
     for(int i = 0; i < triangles.size(); i++){
@@ -100,6 +116,7 @@ void testApp::draw(){
     glTranslatef(0,0,-100);
     glRotatef(sin(ofGetElapsedTimef()*1.3)*180,0,1,0);
     glScalef(200,200,200);
+    //glScalef(22,22,22);
     ofSetColor(255);
     m.drawWireframe();
     glEnd();
