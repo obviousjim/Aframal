@@ -444,10 +444,10 @@
 			children = (
 				E78AB52F156E7D2B001254D4 /* ofxGts.h */,
 				E78AB52E156E7D2B001254D4 /* ofxGts.cpp */,
-				E78AB531156E7D2B001254D4 /* ofxGtsIsoSurface.h */,
-				E78AB530156E7D2B001254D4 /* ofxGtsIsoSurface.cpp */,
 				E78AB533156E7D2B001254D4 /* ofxGtsSurface.h */,
 				E78AB532156E7D2B001254D4 /* ofxGtsSurface.cpp */,
+				E78AB531156E7D2B001254D4 /* ofxGtsIsoSurface.h */,
+				E78AB530156E7D2B001254D4 /* ofxGtsIsoSurface.cpp */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -640,7 +640,7 @@
 					"-D__MACOSX_CORE__",
 					"-lpthread",
 				);
-				SDKROOT = macosx10.6;
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
 			};
 			name = Debug;
 		};
@@ -677,7 +677,7 @@
 					"-D__MACOSX_CORE__",
 					"-lpthread",
 				);
-				SDKROOT = macosx10.6;
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
 			};
 			name = Release;
 		};

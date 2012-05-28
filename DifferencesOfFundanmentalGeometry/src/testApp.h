@@ -25,6 +25,5 @@ class testApp : public ofBaseApp{
 	ofxGtsSurface* surface1;
 	ofxGtsSurface* surface2;
     ofxGtsSurface* result;
-    
-    ofMesh m;
+
 };
