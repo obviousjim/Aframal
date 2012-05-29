@@ -21,6 +21,7 @@ class testApp : public ofBaseApp{
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
 
+    ofxGameCamera cam;
 	ofxGts gts;
 	ofxGtsSurface* surface1;
 	ofxGtsSurface* surface2;

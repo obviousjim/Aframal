@@ -7,58 +7,70 @@ void testApp::setup(){
     ofEnableAlphaBlending();
     
 	ofSetVerticalSync(true);
-	
-  	surface1 = new ofxGtsSurface();
+	surface1 = new ofxGtsSurface();
     surface2 = new ofxGtsSurface();
     result = new ofxGtsSurface();
-    surface1->setup("surfaces/cube1.gts");
-    surface2->setup("surfaces/sphere.gts");
 
-    surface1->getIntersection(*surface2, *result);
+    surface1->setup("surfaces/cube1.gts");
+    surface1->centerAtOrigin();
+    surface1->scale(100);
+    surface1->translate(ofVec3f(0, 48, 0));
+    
+    surface2->setup("surfaces/cube1.gts");
+    surface2->centerAtOrigin();
+    surface2->scale(100);
+    
+    surface2->rotate(90, ofVec3f(1,0,0));
+    
+    cout << "intersecting 1 to 2" << endl;
+    surface1->getUnion(*surface2, *result);
+    
+    cam.setup();
+    cam.speed = 10;
+    cam.autosavePosition = true;
+    cam.loadCameraPosition();
+    
 }
 
 //--------------------------------------------------------------
 void testApp::update(){
+//    result->rotate(2, ofVec3f(0,1,0));
 }
 
 //--------------------------------------------------------------
 void testApp::draw(){
     
-    ofMesh a,b, c;
-    surface1->copyToMesh(a);
-    surface2->copyToMesh(b);
-    result->copyToMesh(c);
-    
+    cam.begin();
+    ofMesh a,b,c;
+    surface1->copyTo(a);
+    surface2->copyTo(b);
+    result->copyTo(c);
     
     ofPushStyle();
-    ofPushMatrix();
-    ofTranslate(ofGetWidth()/2,ofGetHeight()/2,-25);
-    ofRotate(sin(ofGetElapsedTimef()*1.3)*180,0,1,0);
-    ofScale(100,100,100);
-    
-    ofSetColor(255, 255,255,100);
+
+    ofSetColor(255, 255,255,10);
     a.drawWireframe();
     b.drawWireframe();
     
     ofSetColor(255, 0, 0);
     c.drawWireframe(); 
-    
-	glPopMatrix();
     ofPopStyle();
+    
+    cam.end();
 }
 
 //--------------------------------------------------------------
 void testApp::keyPressed(int key){
-    if(key == 's'){
+    if(key == 'S'){
         ofMesh out;
-        result->copyToMesh(out);
-        out.save("meshTest.ply");
+        result->copyTo(out);
+        out.save("output.ply");
     }
     if(key == OF_KEY_UP){
-        result->translate(ofVec3f(0, -1, 0));    
+//        accumulation.translate(ofVec3f(0, -1, 0));    
     }
     else if(key == OF_KEY_DOWN){
-        result->translate(ofVec3f(0, 1, 0));
+//        accumulation.translate(ofVec3f(0, 1, 0));
     }
 }
 
