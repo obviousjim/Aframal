@@ -1,7 +1,13 @@
 #include "testApp.h"
+//TODO 
+//Hook up sliders
+//Hook up DepthImage timeline
+//Hook up homography
 
 //--------------------------------------------------------------
 void testApp::setup(){
+    
+    
     
 	ofSetFrameRate(30);
     ofBackground(255);
@@ -9,17 +15,20 @@ void testApp::setup(){
     loadedSuccess = false;    
 
     renderer.addColors = false;
+    filler.enable = true;
     
     ofxXmlSettings defaults;
     if(defaults.loadFile("settings.xml")){
         string takeDirectory = defaults.getValue("take", "");
         if(take.loadFromFolder(takeDirectory)){
             depthImages.loadSequence(take.depthFolder);
+            
             cout << "loading " << takeDirectory << " with duration " << depthImages.getDurationInMillis() <<  endl;
+            
             renderer.setup(take.calibrationDirectory);
             depthImages.selectTime(depthImages.getDurationInMillis()/2);
             renderer.setDepthImage(depthImages.getPixels());
-			renderer.update();
+//			renderer.update();
             renderer.getMesh().clearColors();
             loadedSuccess = true;
         }
@@ -38,26 +47,55 @@ void testApp::setup(){
     fbo.allocate(fboRectangle.width, fboRectangle.height, GL_RGB, 4);
     
     panel.setup();
-    panel.add(simplify.setup("simplify", ofxParameter<int>(), 1, 16));
-    
-    panel.add(pointSize.setup("Point Size", ofxParameter<int>(), 1, 10));
-    panel.add(lineWidth.setup("Line Width", ofxParameter<int>(), 1, 10));;
+    panel.add(simplify.setup("Simplify", ofxParameter<int>(), 1, 16));
     panel.add(farClip.setup("Far Clip", ofxParameter<float>(), 1, 2000));
     panel.add(edgeClip.setup("Edge Clip", ofxParameter<float>(), 0, 500));
+    panel.add(fillKernelSize.setup("Fill Kernel Size", ofxParameter<int>(), 1, 7));
+    panel.add(fillPasses.setup("Fill Passes", ofxParameter<int>(), 1, 10));
+    panel.add(pointSize.setup("Point Size", ofxParameter<int>(), 1, 10));
+    panel.add(lineWidth.setup("Line Width", ofxParameter<int>(), 1, 10));;
 
     panel.loadFromFile("guisettings.xml");
+    
+    refreshRenderer();
+    
+    //listeners
+    farClip.addListener(this, &testApp::sliderChanged);
+    simplify.addListener(this, &testApp::sliderChanged);
+    edgeClip.addListener(this, &testApp::sliderChanged);
+    fillKernelSize.addListener(this, &testApp::sliderChanged);
+    fillPasses.addListener(this, &testApp::sliderChanged);
     
     cam.setup();
     cam.autosavePosition = true;
     cam.speed = 10;
     cam.setScale(1,-1,1);
     cam.loadCameraPosition();
+    
+    ofToggleFullscreen();
 
-    for(int i = 0; i < 200; i++){
-        ofNode n;
-        n.setPosition(ofRandom(-200,200),ofRandom(-200,200),ofRandom(-200,200));
-		nodes.push_back(n);
-    }
+}
+
+//--------------------------------------------------------------
+void testApp::sliderChanged(float& val){
+    refreshRenderer();
+}
+void testApp::sliderChanged(int& val){
+    refreshRenderer();
+}
+
+void testApp::refreshRenderer(){
+    
+    renderer.edgeCull = edgeClip;
+    renderer.farClip = farClip;
+    renderer.setSimplification(simplify);
+
+    filler.setKernelSize(fillKernelSize);
+    filler.setIterations(fillPasses);
+    filler.close(depthImages.getPixels());
+    
+    renderer.update();
+    renderer.getMesh().clearColors();
 }
 
 //--------------------------------------------------------------
@@ -74,7 +112,7 @@ void testApp::loadNewSequence(){
             renderer.setup(take.calibrationDirectory);
             depthImages.selectTime(depthImages.getDurationInMillis()/2);
             renderer.setDepthImage(depthImages.getPixels());
-            renderer.update();
+//            renderer.update();
             renderer.getMesh().clearColors();
             
             loadedSuccess = true;
@@ -86,8 +124,8 @@ void testApp::loadNewSequence(){
 void testApp::update(){
 	
     if(!loadedSuccess) return;
-	
     
+	panel.setPosition(ofPoint(fboRectangle.width + 10, 4));
 }
 
 //--------------------------------------------------------------
@@ -112,17 +150,15 @@ void testApp::draw(){
     
     //points and lines
     ofSetColor(0);
-    ofSetLineWidth(1);
+    ofSetLineWidth(lineWidth);
     renderer.drawWireFrame(false);
     
-    glPointSize(10);
+    glPointSize(pointSize);
     renderer.drawPointCloud(false);
 	ofPopStyle();
     
     glDisable(GL_DEPTH_TEST);
-    
-    for(int i = 0; i < nodes.size(); i++) nodes[i].draw();
-    
+        
     ofDrawGrid();
     
     cam.end();

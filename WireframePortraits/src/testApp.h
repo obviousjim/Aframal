@@ -2,10 +2,8 @@
 
 #include "ofMain.h"
 #include "ofxRGBDRenderer.h"
-//#include "ScreenLabPortrait.h"
 #include "ofxGameCamera.h"
 #include "ofxXmlSettings.h"
-//#include "ofxCameraTrack.h"
 #include "ofxGui.h"
 #include "ofxDepthImageSequence.h"
 #include "ofxDepthHoleFiller.h"
@@ -40,6 +38,8 @@ class testApp : public ofBaseApp{
     ofxIntSlider simplify;
     ofxIntSlider pointSize;
     ofxIntSlider lineWidth;
+    ofxIntSlider fillKernelSize;
+    ofxIntSlider fillPasses;
     
     ofxFloatSlider farClip;
     ofxFloatSlider edgeClip;
@@ -51,6 +51,6 @@ class testApp : public ofBaseApp{
     void loadNewSequence();
   
     void refreshRenderer();
-    
-    vector<ofNode> nodes;
+    void sliderChanged(float& val);
+    void sliderChanged(int& val);
 };
